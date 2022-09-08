@@ -45,7 +45,7 @@ app.post('/api/phonebill/', async function (req, res) {
 
     const price_plan = await db.get('SELECT id, plan_name, sms_price, call_price FROM price_plan where plan_name = ?', req.body.price_plan);
 
-    const activity = re.body.actions;
+    const activity = req.body.actions;
 
     //totalPhonebill logic
     const activities = activity.split(",");
