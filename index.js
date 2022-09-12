@@ -27,7 +27,7 @@ app.get('/', async function (req, res) {
 app.post('/api/price_plan/update', async function (req, res) {
     const { name, call_cost, sms_cost } = req.body;
     await db.all(`update price_plan set plan_name = ?, sms_price = ?, call_price = ? where plan_name = ?`,
-    name,sms_cost,call_cost,name)
+        name, sms_cost, call_cost, name)
     console.log(req.body)
     // res.json({
     //     status: 'success'
@@ -78,14 +78,26 @@ app.get('/api/price_plans', async function (req, res) {
 
 app.post('/api/price_plan/delete', async function (req, res) {
     const { plan_name } = req.body;
-    await db.all(`delete from price_plan where plan_name = ?`, plan_name);
+    await db.all(`delete from price_plan where plan_name = ?`, plan_name).then(() => {
+        res.json({
+            status: 'success',
+            action: 'Delete'
+        })
+    })
 });
 
 app.post('/api/price_plan/add', async function (req, res) {
+    console.log('calling add endpoint');
     const { plan_name, sms_price, call_price } = req.body;
 
-    await db.all(`insert into price_plan (plan_name, sms_price, call_price) values (?, ?, ?)`,
-        plan_name, sms_price, call_price)
+    const dbReuslts = await db.all(`insert into price_plan (plan_name, sms_price, call_price) values (?, ?, ?)`,
+        plan_name, sms_price, call_price).then(() => {
+            res.json({
+                status: 'success',
+                action: 'Add'
+            })
+        });
+
 })
 
 console.log("done!")
@@ -93,16 +105,5 @@ console.log("done!")
 
 const PORT = process.env.PORT || 6001;
 app.listen(PORT, function () {
-
-
-
-
-
-
-
-
-
-
-    
     console.log(`Price plan API started on port ${PORT}`)
 });
